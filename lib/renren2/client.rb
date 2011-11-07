@@ -8,7 +8,7 @@ module Renren2
     attr_reader :redirect_uri
     attr_accessor :token
     
-    # Initializes a new Client from a signed_request
+    # Initializes a new Client from a authentication_code
     #
     # @param [String] code The Authorization Code value
     # @param [Hash] opts the options to create the client with
@@ -18,20 +18,6 @@ module Renren2
     def self.from_code(code, opts={}, &block)
       client = self.new(opts, &block)
       client.auth_code.get_token(code)
-      
-      client
-    end
-    
-    # Initializes a new Client from a signed_request
-    #
-    # @param [String] signed_request param posted by Sina
-    # @param [Hash] opts the options to create the client with
-    # @option opts [Hash] :connection_opts ({}) Hash of connection options to pass to initialize Faraday with
-    # @option opts [FixNum] :max_redirects (5) maximum number of redirects to follow
-    # @yield [builder] The Faraday connection builder
-    def self.from_signed_request(signed_request, opts={}, &block)
-      client = self.new(opts, &block)
-      client.signed_request.get_token(signed_request)
       
       client
     end
@@ -118,6 +104,10 @@ module Renren2
       token.params["user"] if token
     end
     
+    def user_id
+      user["id"] if user
+    end
+    
     def scope
       token.params["scope"] if token
     end
@@ -147,13 +137,6 @@ module Renren2
     # @see http://tools.ietf.org/html/draft-ietf-oauth-v2-15#section-4.3
     def password
       super
-    end
-    
-    # The Signed Request Strategy
-    #
-    # @see http://open.weibo.com/wiki/%E7%AB%99%E5%86%85%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97
-    def signed_request
-      @signed_request ||= Renren2::Strategy::SignedRequest.new(self)
     end
     
     #

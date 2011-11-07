@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Renren2
   module Interface
     
