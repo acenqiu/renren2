@@ -1,3 +1,81 @@
 = Renren2
 
-This project rocks and uses MIT-LICENSE.
+A Ruby wrapper for Renren API(OAuth2).It is based on {OAuth2 gem}[https://github.com/intridea/oauth2], thanks for his hard-working.I have wrapped most of the APIs Renren defined.
+
+== Installation
+
+  gem install renren2
+  
+== Usage Examples
+
+Config your api_key, api_secret and redrect_uri somewhere like development.rb.
+
+  Renren2::Config.api_key = "1234567890"
+  Renren2::Config.api_secret = "somethinglooksstrageandhardtoremember"
+  Renren2::Config.redirect_uri = "http://www.example.com/callback"
+
+Ok, now you are ready to enjoy it. Renren has provided several ways to get your access token, and you can easily get it using Renren2.
+
+1.The Authorization Code strategy with response_type set to code
+  
+  # get authorize_url
+  client = Renren2::Client.new
+  client.auth_code.authorize_url
+  # => "https://graph.renren.com/oauth/authorize?response_type=code&client_id=1234567890&redirect_uri=http%3A%2F%2Fwww.example.com%2fcallback"
+
+  # get token using authorization_code
+  # Renren2::Client.from_code is a shortcut for client.auth_code.get_token("authorization_code_value")
+  client = Renren2::Client.from_code("authorization_code_value")
+  
+2.The Authorization Code strategy with response_type set to token
+  
+  # get authorize_url with response_type set to token
+  client = Renren::Client.new
+  client.auth_code.authorize_url(:response_type => "token")
+  # => "https://graph.renren.com/oauth/authorize?response_type=token&client_id=1234567890&redirect_uri=http%3A%2F%2Fwww.example.com%2fcallback"
+  
+  # get token from callback hash like this /callback#access_token=6874dd3766b35536abcb76a9e3a57867&expires_in=2594445&scope=photo_upload+send_invitation
+  # note that the access_token is different with renren defined, just for demonstration.
+  client = Renren2::Client.from_hash(:access_token => "6874dd3766b35536abcb76a9e3a57867", :expires_in => 86400)
+  
+3.The Resource Owner Password Credentials strategy
+  
+  # get token with user's password
+  client = Renren::Client.new
+  client.password.get_token('username', 'password')
+  
+4.Refresh your token
+
+Note that you could refresh your token only when you can get the refresh_token.
+
+  
+  client.refresh!
+  
+You can check if you are authorized by
+
+  client.is_authorized?
+  # => true
+  
+If you are authorized, then you can do whatever you want now.
+
+  response = client.users.get_logged_in_user
+  # => #<OAuth2::Response:: ...>
+  
+  response.parsed
+  # => {"uid"=>1234567890}
+
+
+== API
+
+You can find them in /lib/renren2/interface/.Note that all methods follow the patten of
+
+  {resource}.{the_rest_path_joined_by_underline}(required_params, opts={})
+   
+So {friends.getSameFriends}[http://wiki.dev.renren.com/wiki/Friends.getSameFriends] will turn to
+
+  friends.get_same_friends(uid1, uid2, opts={})
+  
+  
+== Copyright
+
+Copyright (c) 2011 Acenqiu. See LICENSE for details.

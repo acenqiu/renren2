@@ -1,14 +1,6 @@
 module Renren2
   module Config
     
-    def self.app_id=(val)
-      @@app_id = val
-    end
-    
-    def self.app_id
-      @@app_id
-    end
-    
     def self.api_key=(val)
       @@api_key = val
     end
