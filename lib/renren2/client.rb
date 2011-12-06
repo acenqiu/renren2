@@ -120,6 +120,15 @@ module Renren2
         false
       end
     end
+    
+    def hash_for_save
+      if token
+        token.params.merge({"expires_in" => token.expires_in,
+                            "expires_at" => token.expires_at,
+                            "refresh_token" => token.refresh_token,
+                            "access_token" => token.token})
+      end
+    end
    
     #
     # Strategies

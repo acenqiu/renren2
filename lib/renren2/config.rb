@@ -1,6 +1,6 @@
 module Renren2
   module Config
-    
+
     def self.api_key=(val)
       @@api_key = val
     end
