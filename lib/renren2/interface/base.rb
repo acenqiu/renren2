@@ -26,7 +26,7 @@ module Renren2
                   :v            => "1.0",
                   :format       => "JSON"}.merge(opts.delete(:body) || {})
                                           .merge(opts.delete(:params) || {})
-        opts.merge!(:params => params.merge(:sig => compute_sig(params)), :parse => :json)
+        opts.merge!(:body => params.merge(:sig => compute_sig(params)), :parse => :json)
         
         # use the old server
         path = "http://api.renren.com/restserver.do"
@@ -45,7 +45,9 @@ module Renren2
       private
       
         def compute_sig(params={})
+          params = params.reject {|k,v| v.class == Faraday::UploadIO }
           str = params.collect {|k,v| "#{k}=#{v}"}.sort.join("") + @client.secret
+          p str
           Digest::MD5.hexdigest(str)
         end
     end

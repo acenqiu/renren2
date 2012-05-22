@@ -40,7 +40,8 @@ module Renren2
       
       # 上传照片到用户的相册，同时返回这张照片的信息
       #
-      # @param [binary] upload 文件的数据
+      # @param [String] upload          待上传照片路径
+      # @param [String] content_type    待上传照片格式
       # @param [Hash] opts 
       # @option opts [String] :caption  照片的描述信息
       # @option opts [int] :aid         相册的ID，如果指定此参数，将会传到指定相册，默认传到手机相册 
@@ -48,9 +49,9 @@ module Renren2
       # @note require "photo_upload" scope
       #
       # @see http://wiki.dev.renren.com/wiki/Photos.upload
-      def upload(upload, opts={})
+      def upload(upload, content_type, opts={})
         check_scope "photo_upload"
-        post 'photos.upload', :body => {:upload => upload}.merge(opts)
+        post 'photos.upload', :body => {:upload => Faraday::UploadIO.new(upload, content_type)}.merge(opts)
       end
       
       # 获取可见照片的相关信息
