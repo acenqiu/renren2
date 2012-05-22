@@ -47,7 +47,6 @@ module Renren2
         def compute_sig(params={})
           params = params.reject {|k,v| v.class == Faraday::UploadIO }
           str = params.collect {|k,v| "#{k}=#{v}"}.sort.join("") + @client.secret
-          p str
           Digest::MD5.hexdigest(str)
         end
     end
